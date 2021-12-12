@@ -46,7 +46,7 @@ mkinitcpio -P
 
 passwd
 useradd -m -g users -G wheel petar
-passwd jay
+passwd petar
 
 pacman -Syyu
 pacman -S grub efibootmgr dosfstools os-prober mtools networkmanager
@@ -61,5 +61,13 @@ systemctl enable NetworkManager
 reboot
 
 #Post-base installation
-sudo pacman -S xorg-server plasma-meta sddm amd-ucode sudo onlyoffice code base-devel htop neofetch
+sudo pacman -S xf86-video-amdgpu xorg-server sddm amd-ucode alacritty sudo onlyoffice code base-devel htop neofetch
+
+#Installation and configuration of awesomewm
+
+#Final (security)configurations
+Add user
+pacman mirrors and repositories
+Improvement system and ssd
+Appearance
 
