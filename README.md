@@ -48,17 +48,18 @@ passwd
 useradd -m -g users -G wheel petar
 passwd jay
 
-pacman -S grub efibootmgr dosfstools os-prober mtools
+pacman -Syyu
+pacman -S grub efibootmgr dosfstools os-prober mtools networkmanager
 mkdir /boot/efi
 mount /dev/sda1 /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck (if it cant find the efi directory, i will add flag: --efi-directory=/boot/efi)
 grub-mkconfig -o /boot/grub/grub.cfg
 (something was said about microcode for AMD or intel systems, might look into that)
 
-pacman -S networkmanager
 systemctl enable NetworkManager
 
 reboot
 
 #Post-base installation
-Installing KDE plasma, sddm, sudo, onlyoffice, code, latte-dock, base-devel, htop, neofetch(:-p), 
+sudo pacman -S xorg-server plasma-meta sddm amd-ucode sudo onlyoffice code base-devel htop neofetch
+
