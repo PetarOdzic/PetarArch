@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ####################
 # Pre Installation #
 ####################
@@ -51,7 +53,3 @@ grub-mkconfig -o /boot/grub/grub.cfg
 pacman -S xf86-video-amdgpu xorg-server plasma-desktop sddm amd-ucode alacritty sudo onlyoffice code base-devel htop neofetch nano
 systemctl enable NetworkManager
 systemctl enable sddm
-
-
-
-
