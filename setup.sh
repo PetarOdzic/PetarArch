@@ -7,12 +7,18 @@
 ## Ensure accurate systemclock
 timedatectl set-ntp true
 
+## Installing essentials for partitioning
+pacman -Syy gptfdisk btrfs-progs
+
 ## Creating partition table, partitions and partitioning them.
-fdisk /dev/nvme1n1
-# to create partition table GPT, and 3 partitions(1. boot, 2. swap, 3. root)
+sgdisk -Z /dev/nvme1n1 # zap all on disk
+sgdisk -a 2048 -o /dev/nvme1n1
+sgdisk -n 1::+300M --typecode=1:ef00 --change-name=1:'EFIBOOT' /dev/nvme1n1
+sgdisk -n 2::+32G --typecode=2:8200 --change-name=2:'SWAP' /dev/nvme1n1
+sgdisk -n 3::-0 --typecode=3:8304 --change-name=3:'ROOT' /dev/nvme1n1
+mkfs.fat -F 32 /dev/nvme1n1p1
 mkfs.btrfs /dev/nvme1n1p3
 mkswap /dev/nvme1n1p2
-mkfs.fat -F32 /dev/nvme1n1p1
 
 ## Mount partitions
 mount /dev/nvme1n1p3 /mnt
@@ -24,8 +30,7 @@ swapon /dev/nvme1n1p2
 # Installation #
 ################
 
-## Installing essentials.
-pacman -Syy
+## Installing base system.
 pacstrap /mnt base linux linux-firmware
 
 ## Chrooting to the root partition.
@@ -36,20 +41,23 @@ arch-chroot /mnt
 ln -sf /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime
 hwclock --systohc
 locale-gen {and incomment en_US.UTF-8}
-echo "en_US.UTF-8"
+sed -i "en_US.UTF-8" /etc/locale.gen
 nano /etc/locale.conf
-echo "LANG=en_US.UTF-8" >> /etc/locale.conf
+sed -i "LANG=en_US.UTF-8" /etc/locale.conf
 
 # Configuring hostname
 touch /etc/hostname {and enter a hostname like petar-arch}
+sed -i "myarch" /etc/hostname
 hostnamectl set-hostname myarch
 touch /etc/hosts {and type: 127.0.0.1 localhost ::1 localhost 127.0.1.1 myarch }
-echo -e "127.0.0.1\tlocalhost\n::1\t\tlocalhost\n127.0.1.1\tmyarch.localdomain\tmyarch"
+sed -i "127.0.0.1\tlocalhost\n::1\t\tlocalhost\n127.0.1.1\tmyarch.localdomain\tmyarch" /etc/hosts
 
 ## This
 mkinitcpio -P
 
-#adding users and passwords here
+#adding users, and privileges here
+adduser -m-g users -G wheel petar
+sed -i 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
 
 #####################
 # Post installation #
